@@ -64,11 +64,20 @@ client.connect((err) => {
       res.send(documents)
     })
   })
-
+// Send data to ui using email query
   app.get('/mailData',(req,res)=>{
     orderCollection.find({email:req.query.email})
     .toArray((err,documents)=>{
       res.send(documents);
+    })
+  })
+  // Delete books method
+  app.delete('/deleteBook/:id',(req,res)=>{
+    const id =ObjectId((req.params.id));
+    bookCollection.findOneAndDelete({_id:id})
+    .then(documents=> {
+      res.send(!!documents.value);
+      console.log("Book deleted successfully");
     })
   })
   //   console.log({err});
