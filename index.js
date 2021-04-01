@@ -4,7 +4,7 @@ require("dotenv").config();
 const cors = require("cors");
 const ObjectId = require('mongodb').ObjectId;
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 
 app.use(cors());
 app.use(express.json());
