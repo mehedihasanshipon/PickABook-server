@@ -14,8 +14,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// console.log(process.env.DB_USER);
-
+// MongoDB URI
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dzoti.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -24,17 +23,17 @@ const client = new MongoClient(uri, {
 client.connect((err) => {
   const bookCollection = client.db("bookshops").collection("books");
   const orderCollection = client.db("bookshops").collection("orders");
-  // Post data from UI
+
+  // Receive Post data from UI and insert into MongoDB
   app.post("/addBooks", (req, res) => {
     const books = req.body;
-    // console.log(books);
     bookCollection.insertOne(books).then((result) => {
       res.send(result.insertedCount > 0);
       console.log("Data inserted successfully");
     });
   });
 
-  // Send data to ui
+  // Send data to ui from mongodb
   app.get("/books", (req, res) => {
     bookCollection.find({}).toArray((err, documents) => {
       res.send(documents);
@@ -48,6 +47,7 @@ client.connect((err) => {
       res.send(documents[0]);
     })
   })
+
   // Add order collection to Database
   app.post('/addOrder',(req,res)=>{
     const orders = req.body;
@@ -57,13 +57,15 @@ client.connect((err) => {
       console.log("Order added Successfully");
     })
   })
-  // Send Order list to UI
+
+  // Send Order lists data to UI
   app.get('/orderList',(req,res)=>{
     orderCollection.find({})
     .toArray((err,documents)=>{
       res.send(documents)
     })
   })
+
 // Send data to ui using email query
   app.get('/mailData',(req,res)=>{
     orderCollection.find({email:req.query.email})
@@ -71,6 +73,7 @@ client.connect((err) => {
       res.send(documents);
     })
   })
+  
   // Delete books method
   app.delete('/deleteBook/:id',(req,res)=>{
     const id =ObjectId((req.params.id));
@@ -80,10 +83,10 @@ client.connect((err) => {
       console.log("Book deleted successfully");
     })
   })
-  //   console.log({err});
   console.log("Database connected successfully");
 });
 
+// Listen port method
 app.listen(port, () => {
   console.log(`Book app listening at http://localhost:${port}`);
 });
